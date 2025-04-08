@@ -51,6 +51,43 @@ void HkFlutterPlugin::HandleMethodCall(
       version_stream << "7";
     }
     result->Success(flutter::EncodableValue(version_stream.str()));
+  } else if (method_call.method_name().compare("initCamera") == 0) {
+    const auto* arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
+    if (arguments) {
+      auto ip = std::get<std::string>(arguments->at(flutter::EncodableValue("ip")));
+      auto port = std::get<std::string>(arguments->at(flutter::EncodableValue("port")));
+      auto userName = std::get<std::string>(arguments->at(flutter::EncodableValue("userName")));
+      auto password = std::get<std::string>(arguments->at(flutter::EncodableValue("password")));
+      // auto flag = std::get<int>(arguments->at(flutter::EncodableValue("flag")));
+      
+      // TODO: Implement Hikvision SDK initialization
+      result->Success(flutter::EncodableValue(true));
+    } else {
+      result->Error("Invalid arguments", "Expected map");
+    }
+  } else if (method_call.method_name().compare("setVideoInfo") == 0) {
+    // TODO: Implement video info setting
+    result->Success(flutter::EncodableValue(true));
+  } else if (method_call.method_name().compare("setOSDInfo") == 0) {
+    // TODO: Implement OSD info setting
+    result->Success(flutter::EncodableValue(true));
+  } else if (method_call.method_name().compare("setNtp") == 0) {
+    // TODO: Implement NTP setting
+    result->Success(flutter::EncodableValue(true));
+  } else if (method_call.method_name().compare("setTime") == 0) {
+    // TODO: Implement time setting
+    result->Success(flutter::EncodableValue(true));
+  } else if (method_call.method_name().compare("setPwd") == 0) {
+    const auto* arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
+    if (arguments) {
+      auto userName = std::get<std::string>(arguments->at(flutter::EncodableValue("userName")));
+      auto pwd = std::get<std::string>(arguments->at(flutter::EncodableValue("pwd")));
+      
+      // TODO: Implement password setting
+      result->Success(flutter::EncodableValue(true));
+    } else {
+      result->Error("Invalid arguments", "Expected map");
+    }
   } else {
     result->NotImplemented();
   }
