@@ -26,4 +26,43 @@ abstract class HkFlutterPlatform extends PlatformInterface {
   Future<String?> getPlatformVersion() {
     throw UnimplementedError('platformVersion() has not been implemented.');
   }
+
+  /// 初始化摄像头
+  Future<bool> initCamera({
+    required String ip,
+    required String port,
+    required String userName,
+    required String password,
+    int flag = 0,
+  }) {
+    throw UnimplementedError('initCamera() has not been implemented.');
+  }
+
+  /// 设置视频信息
+  Future<bool> setVideoInfo() {
+    throw UnimplementedError('setVideoInfo() has not been implemented.');
+  }
+
+  /// 设置OSD信息
+  Future<bool> setOSDInfo() {
+    throw UnimplementedError('setOSDInfo() has not been implemented.');
+  }
+
+  /// 设置NTP
+  Future<bool> setNtp() {
+    throw UnimplementedError('setNtp() has not been implemented.');
+  }
+
+  /// 设置时间
+  Future<bool> setTime() {
+    throw UnimplementedError('setTime() has not been implemented.');
+  }
+
+  /// 设置密码
+  Future<bool> setPwd({
+    required String userName,
+    required String pwd,
+  }) {
+    throw UnimplementedError('setPwd() has not been implemented.');
+  }
 }
