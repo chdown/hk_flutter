@@ -91,12 +91,19 @@ add_custom_command(TARGET ${PLUGIN_NAME} POST_BUILD
     "${CMAKE_CURRENT_SOURCE_DIR}/lib/libssl-1_1-x64.dll" $<TARGET_FILE_DIR:${PLUGIN_NAME}>
 )
 
-# List of absolute paths to libraries that should be bundled with the plugin.
-# This list could contain prebuilt libraries, or libraries created by an
-# external build triggered from this build file.
+# 添加DLL文件到打包列表
 set(hk_flutter_bundled_libraries
-  ""
-  PARENT_SCOPE
+    "${CMAKE_CURRENT_SOURCE_DIR}/lib/HCNetSDK.dll"
+    "${CMAKE_CURRENT_SOURCE_DIR}/lib/HCCore.dll"
+    "${CMAKE_CURRENT_SOURCE_DIR}/lib/GdiPlus.dll"
+    "${CMAKE_CURRENT_SOURCE_DIR}/lib/hpr.dll"
+    "${CMAKE_CURRENT_SOURCE_DIR}/lib/HmMerge.dll"
+    "${CMAKE_CURRENT_SOURCE_DIR}/lib/libcrypto-1_1-x64.dll"
+    "${CMAKE_CURRENT_SOURCE_DIR}/lib/libssl-1_1-x64.dll"
+    "${CMAKE_CURRENT_SOURCE_DIR}/lib/HCNetSDK.lib"
+    "${CMAKE_CURRENT_SOURCE_DIR}/lib/HCCore.lib"
+    "${CMAKE_CURRENT_SOURCE_DIR}/lib/GdiPlus.lib"
+    PARENT_SCOPE
 )
 
 # === Tests ===
