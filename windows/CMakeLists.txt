@@ -8,6 +8,14 @@ cmake_minimum_required(VERSION 3.14)
 set(PROJECT_NAME "hk_flutter")
 project(${PROJECT_NAME} LANGUAGES CXX)
 
+# Add compiler options to disable specific warnings
+if(MSVC)
+    add_compile_options(/wd4819 /wd4820 /wd4995 /wd4996 /wd4010)
+    # Disable treating warnings as errors
+    string(REPLACE "/WX" "" CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}")
+    string(REPLACE "/WX" "" CMAKE_C_FLAGS "${CMAKE_C_FLAGS}")
+endif()
+
 # Explicitly opt in to modern CMake behaviors to avoid warnings with recent
 # versions of CMake.
 cmake_policy(VERSION 3.14...3.25)

@@ -3,8 +3,10 @@
 
 #include <flutter/method_channel.h>
 #include <flutter/plugin_registrar_windows.h>
+#include <HCNetSDK.h>  // Add Hikvision SDK header
 
 #include <memory>
+#include <string>
 
 namespace hk_flutter {
 
