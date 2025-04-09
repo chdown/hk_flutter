@@ -16,6 +16,16 @@ cmake_policy(VERSION 3.14...3.25)
 # not be changed
 set(PLUGIN_NAME "hk_flutter_plugin")
 
+# 添加海康SDK头文件路径
+include_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/hiksdk
+)
+
+# 添加海康SDK库文件路径
+link_directories(
+    ${CMAKE_CURRENT_SOURCE_DIR}/lib
+)
+
 # Any new source files that you add to the plugin should be added here.
 list(APPEND PLUGIN_SOURCES
   "hk_flutter_plugin.cpp"
@@ -47,6 +57,28 @@ target_compile_definitions(${PLUGIN_NAME} PRIVATE FLUTTER_PLUGIN_IMPL)
 target_include_directories(${PLUGIN_NAME} INTERFACE
   "${CMAKE_CURRENT_SOURCE_DIR}/include")
 target_link_libraries(${PLUGIN_NAME} PRIVATE flutter flutter_wrapper_plugin)
+
+# 添加海康SDK库文件
+target_link_libraries(${PLUGIN_NAME} PRIVATE
+    HCNetSDK
+    HCCore
+    PlayCtrl
+    GdiPlus
+)
+
+# 复制DLL文件到输出目录
+add_custom_command(TARGET ${PLUGIN_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${CMAKE_CURRENT_SOURCE_DIR}/lib/HCNetSDK.dll" $<TARGET_FILE_DIR:${PLUGIN_NAME}>
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${CMAKE_CURRENT_SOURCE_DIR}/lib/HCCore.dll" $<TARGET_FILE_DIR:${PLUGIN_NAME}>
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${CMAKE_CURRENT_SOURCE_DIR}/lib/PlayCtrl.dll" $<TARGET_FILE_DIR:${PLUGIN_NAME}>
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${CMAKE_CURRENT_SOURCE_DIR}/lib/AudioRender.dll" $<TARGET_FILE_DIR:${PLUGIN_NAME}>
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${CMAKE_CURRENT_SOURCE_DIR}/lib/GdiPlus.dll" $<TARGET_FILE_DIR:${PLUGIN_NAME}>
+)
 
 # List of absolute paths to libraries that should be bundled with the plugin.
 # This list could contain prebuilt libraries, or libraries created by an
