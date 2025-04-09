@@ -70,7 +70,6 @@ target_link_libraries(${PLUGIN_NAME} PRIVATE flutter flutter_wrapper_plugin)
 target_link_libraries(${PLUGIN_NAME} PRIVATE
     HCNetSDK
     HCCore
-    PlayCtrl
     GdiPlus
 )
 
@@ -81,11 +80,15 @@ add_custom_command(TARGET ${PLUGIN_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
     "${CMAKE_CURRENT_SOURCE_DIR}/lib/HCCore.dll" $<TARGET_FILE_DIR:${PLUGIN_NAME}>
     COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    "${CMAKE_CURRENT_SOURCE_DIR}/lib/PlayCtrl.dll" $<TARGET_FILE_DIR:${PLUGIN_NAME}>
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
-    "${CMAKE_CURRENT_SOURCE_DIR}/lib/AudioRender.dll" $<TARGET_FILE_DIR:${PLUGIN_NAME}>
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different
     "${CMAKE_CURRENT_SOURCE_DIR}/lib/GdiPlus.dll" $<TARGET_FILE_DIR:${PLUGIN_NAME}>
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${CMAKE_CURRENT_SOURCE_DIR}/lib/hpr.dll" $<TARGET_FILE_DIR:${PLUGIN_NAME}>
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${CMAKE_CURRENT_SOURCE_DIR}/lib/HmMerge.dll" $<TARGET_FILE_DIR:${PLUGIN_NAME}>
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${CMAKE_CURRENT_SOURCE_DIR}/lib/libcrypto-1_1-x64.dll" $<TARGET_FILE_DIR:${PLUGIN_NAME}>
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    "${CMAKE_CURRENT_SOURCE_DIR}/lib/libssl-1_1-x64.dll" $<TARGET_FILE_DIR:${PLUGIN_NAME}>
 )
 
 # List of absolute paths to libraries that should be bundled with the plugin.
