@@ -68,9 +68,9 @@ target_link_libraries(${PLUGIN_NAME} PRIVATE flutter flutter_wrapper_plugin)
 
 # 添加海康SDK库文件
 target_link_libraries(${PLUGIN_NAME} PRIVATE
-    HCNetSDK
-    HCCore
-    GdiPlus
+    "${CMAKE_CURRENT_SOURCE_DIR}/lib/HCNetSDK.lib"
+    "${CMAKE_CURRENT_SOURCE_DIR}/lib/HCCore.lib"
+    "${CMAKE_CURRENT_SOURCE_DIR}/lib/GdiPlus.lib"
 )
 
 # 复制DLL文件到输出目录
@@ -138,10 +138,32 @@ apply_standard_settings(${TEST_RUNNER})
 target_include_directories(${TEST_RUNNER} PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}")
 target_link_libraries(${TEST_RUNNER} PRIVATE flutter_wrapper_plugin)
 target_link_libraries(${TEST_RUNNER} PRIVATE gtest_main gmock)
+
+# 为测试项目添加海康SDK库文件
+target_link_libraries(${TEST_RUNNER} PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/lib/HCNetSDK.lib"
+    "${CMAKE_CURRENT_SOURCE_DIR}/lib/HCCore.lib"
+    "${CMAKE_CURRENT_SOURCE_DIR}/lib/GdiPlus.lib"
+)
+
 # flutter_wrapper_plugin has link dependencies on the Flutter DLL.
 add_custom_command(TARGET ${TEST_RUNNER} POST_BUILD
   COMMAND ${CMAKE_COMMAND} -E copy_if_different
   "${FLUTTER_LIBRARY}" $<TARGET_FILE_DIR:${TEST_RUNNER}>
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+  "${CMAKE_CURRENT_SOURCE_DIR}/lib/HCNetSDK.dll" $<TARGET_FILE_DIR:${TEST_RUNNER}>
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+  "${CMAKE_CURRENT_SOURCE_DIR}/lib/HCCore.dll" $<TARGET_FILE_DIR:${TEST_RUNNER}>
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+  "${CMAKE_CURRENT_SOURCE_DIR}/lib/GdiPlus.dll" $<TARGET_FILE_DIR:${TEST_RUNNER}>
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+  "${CMAKE_CURRENT_SOURCE_DIR}/lib/hpr.dll" $<TARGET_FILE_DIR:${TEST_RUNNER}>
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+  "${CMAKE_CURRENT_SOURCE_DIR}/lib/HmMerge.dll" $<TARGET_FILE_DIR:${TEST_RUNNER}>
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+  "${CMAKE_CURRENT_SOURCE_DIR}/lib/libcrypto-1_1-x64.dll" $<TARGET_FILE_DIR:${TEST_RUNNER}>
+  COMMAND ${CMAKE_COMMAND} -E copy_if_different
+  "${CMAKE_CURRENT_SOURCE_DIR}/lib/libssl-1_1-x64.dll" $<TARGET_FILE_DIR:${TEST_RUNNER}>
 )
 
 # Enable automatic test discovery.

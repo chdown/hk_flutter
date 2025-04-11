@@ -1,4 +1,4 @@
-#include "hk_flutter_plugin.h"
+﻿#include "hk_flutter_plugin.h"
 
 // This must be included before many other Windows headers.
 #include <windows.h>
@@ -12,8 +12,13 @@
 
 #include <memory>
 #include <sstream>
+#include <string>
+#include <HCNetSDK.h>
 
 namespace hk_flutter {
+
+// 全局变量
+LONG m_lUserID = -1;  // 用户ID
 
 // static
 void HkFlutterPlugin::RegisterWithRegistrar(
@@ -54,16 +59,52 @@ void HkFlutterPlugin::HandleMethodCall(
   } else if (method_call.method_name().compare("initCamera") == 0) {
     const auto* arguments = std::get_if<flutter::EncodableMap>(method_call.arguments());
     if (arguments) {
+      // 获取参数
       auto ip = std::get<std::string>(arguments->at(flutter::EncodableValue("ip")));
       auto port = std::get<std::string>(arguments->at(flutter::EncodableValue("port")));
       auto userName = std::get<std::string>(arguments->at(flutter::EncodableValue("userName")));
       auto password = std::get<std::string>(arguments->at(flutter::EncodableValue("password")));
-      // auto flag = std::get<int>(arguments->at(flutter::EncodableValue("flag")));
-      
-      // TODO: Implement Hikvision SDK initialization
+
+      int portNum = atoi(port.c_str());
+
+      // 初始化SDK
+      if (!NET_DVR_Init()) {
+        DWORD error = NET_DVR_GetLastError();
+        std::string errorMsg = R"(SDK初始化失败，错误码：)" + std::to_string(error);
+        result->Error("SDK_INIT_FAILED", errorMsg.c_str());
+        return;
+      }
+
+      // 设置连接超时时间和重连时间
+      NET_DVR_SetConnectTime(2000, 1);
+      NET_DVR_SetReconnect(5000, true);
+
+      // 设置登录参数
+      NET_DVR_USER_LOGIN_INFO loginInfo = { 0 };
+      loginInfo.bUseAsynLogin = 0;  // 同步登录
+
+      // 安全地复制字符串
+      strncpy_s(loginInfo.sDeviceAddress, sizeof(loginInfo.sDeviceAddress), ip.c_str(), _TRUNCATE);
+      loginInfo.wPort = static_cast<WORD>(portNum);
+      strncpy_s(loginInfo.sUserName, sizeof(loginInfo.sUserName), userName.c_str(), _TRUNCATE);
+      strncpy_s(loginInfo.sPassword, sizeof(loginInfo.sPassword), password.c_str(), _TRUNCATE);
+
+      // 设备信息
+      NET_DVR_DEVICEINFO_V40 struDeviceInfoV40 = { 0 };
+
+      // 登录设备
+      m_lUserID = NET_DVR_Login_V40(&loginInfo, &struDeviceInfoV40);
+      if (m_lUserID < 0) {
+        DWORD error = NET_DVR_GetLastError();
+        std::string errorMsg = R"(设备登录失败，错误码：)" + std::to_string(error);
+        NET_DVR_Cleanup();
+        result->Error("LOGIN_FAILED", errorMsg.c_str());
+        return;
+      }
+
       result->Success(flutter::EncodableValue(true));
     } else {
-      result->Error("Invalid arguments", "Expected map");
+      result->Error("INVALID_ARGUMENTS", "参数无效");
     }
   } else if (method_call.method_name().compare("setVideoInfo") == 0) {
     // TODO: Implement video info setting
@@ -82,11 +123,11 @@ void HkFlutterPlugin::HandleMethodCall(
     if (arguments) {
       auto userName = std::get<std::string>(arguments->at(flutter::EncodableValue("userName")));
       auto pwd = std::get<std::string>(arguments->at(flutter::EncodableValue("pwd")));
-      
+
       // TODO: Implement password setting
       result->Success(flutter::EncodableValue(true));
     } else {
-      result->Error("Invalid arguments", "Expected map");
+      result->Error("INVALID_ARGUMENTS", "参数无效");
     }
   } else {
     result->NotImplemented();
