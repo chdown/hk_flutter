@@ -38,15 +38,21 @@ class _MyHomePageState extends State<MyHomePage> {
   final _userNameController = TextEditingController(text: 'admin');
   final _passwordController = TextEditingController(text: 'admin12345');
 
-  void _addLog(String log) {
+  void _addLog(String log, {bool isError = false}) {
     setState(() {
-      _logs.insert(0, '${DateTime.now().toString()}: $log');
+      final timestamp = DateTime.now().toString().split('.').first;
+      final prefix = isError ? '[错误] ' : '[信息] ';
+      final logMessage = '$timestamp $prefix$log';
+      _logs.insert(0, logMessage);
+      // 同时打印到控制台
+      print(logMessage);
     });
   }
 
   Future<void> _initCamera() async {
     try {
       _addLog('开始初始化摄像头...');
+      _addLog('参数: IP=${_ipController.text}, 端口=${_portController.text}, 用户名=${_userNameController.text}');
       final result = await _hkFlutter.initCamera(
         ip: _ipController.text,
         port: _portController.text,
@@ -55,7 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
       );
       _addLog('初始化摄像头结果: $result');
     } catch (e) {
-      _addLog('初始化摄像头失败: $e');
+      _addLog('初始化摄像头失败: $e', isError: true);
     }
   }
 
@@ -65,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
       final result = await _hkFlutter.setVideoInfo();
       _addLog('设置视频信息结果: $result');
     } catch (e) {
-      _addLog('设置视频信息失败: $e');
+      _addLog('设置视频信息失败: $e', isError: true);
     }
   }
 
@@ -75,7 +81,7 @@ class _MyHomePageState extends State<MyHomePage> {
       final result = await _hkFlutter.setOSDInfo();
       _addLog('设置OSD信息结果: $result');
     } catch (e) {
-      _addLog('设置OSD信息失败: $e');
+      _addLog('设置OSD信息失败: $e', isError: true);
     }
   }
 
@@ -85,7 +91,7 @@ class _MyHomePageState extends State<MyHomePage> {
       final result = await _hkFlutter.setNtp();
       _addLog('设置NTP结果: $result');
     } catch (e) {
-      _addLog('设置NTP失败: $e');
+      _addLog('设置NTP失败: $e', isError: true);
     }
   }
 
@@ -95,21 +101,28 @@ class _MyHomePageState extends State<MyHomePage> {
       final result = await _hkFlutter.setTime();
       _addLog('设置时间结果: $result');
     } catch (e) {
-      _addLog('设置时间失败: $e');
+      _addLog('设置时间失败: $e', isError: true);
     }
   }
 
   Future<void> _setPwd() async {
     try {
       _addLog('开始设置密码...');
+      _addLog('参数: 用户名=${_userNameController.text}');
       final result = await _hkFlutter.setPwd(
         userName: _userNameController.text,
         pwd: _passwordController.text,
       );
       _addLog('设置密码结果: $result');
     } catch (e) {
-      _addLog('设置密码失败: $e');
+      _addLog('设置密码失败: $e', isError: true);
     }
+  }
+
+  void _clearLogs() {
+    setState(() {
+      _logs.clear();
+    });
   }
 
   @override
@@ -118,6 +131,13 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.clear_all),
+            onPressed: _clearLogs,
+            tooltip: '清除日志',
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -176,7 +196,13 @@ class _MyHomePageState extends State<MyHomePage> {
               ],
             ),
             const SizedBox(height: 16),
-            const Text('日志输出：', style: TextStyle(fontWeight: FontWeight.bold)),
+            Row(
+              children: [
+                const Text('日志输出：', style: TextStyle(fontWeight: FontWeight.bold)),
+                const Spacer(),
+                Text('共 ${_logs.length} 条日志'),
+              ],
+            ),
             const SizedBox(height: 8),
             Expanded(
               child: Container(
@@ -189,7 +215,15 @@ class _MyHomePageState extends State<MyHomePage> {
                   reverse: true,
                   itemCount: _logs.length,
                   itemBuilder: (context, index) {
-                    return Text(_logs[index]);
+                    final log = _logs[index];
+                    final isError = log.contains('[错误]');
+                    return Text(
+                      log,
+                      style: TextStyle(
+                        color: isError ? Colors.red : Colors.black,
+                        fontSize: 12,
+                      ),
+                    );
                   },
                 ),
               ),
