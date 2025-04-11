@@ -13,12 +13,22 @@
 #include <memory>
 #include <sstream>
 #include <string>
+#include <fstream>
 #include <HCNetSDK.h>
 
 namespace hk_flutter {
 
 // 全局变量
 LONG m_lUserID = -1;  // 用户ID
+
+// 简单的日志打印方法
+void Log(const std::string& message) {
+    std::ofstream log_file("D:\\log.txt", std::ios::app | std::ios::out);
+    if (log_file.is_open()) {
+        log_file << message << std::endl;
+        log_file.close();
+    }
+}
 
 // static
 void HkFlutterPlugin::RegisterWithRegistrar(
